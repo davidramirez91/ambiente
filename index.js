@@ -1,7 +1,11 @@
 import express, { json } from "express";
 import cors from "cors";
 import mysql from "mysql2/promise";
+import pg from "pg";
+import { config } from "dotenv";
 
+config(); // dotemv variables de enterno
+const { Pool } = pg; // pool de pg
 const app = express();
 const PORT = process.env.PORT ?? 3000;
 
@@ -11,15 +15,13 @@ app.set("view engine", "ejs"); // Configura Express para usar EJS
 app.use(express.static("views"));
 app.disable("x-powered-by");
 
-// Configuración de la conexión a la base de datos MySQL
-const pool = mysql.createPool({
-   host: "localhost", // Usualmente 'localhost' o la dirección IP del servidor MySQL 127.0.0.1:3306
-   user: "u936632816_David",
-   password: "David_Ramirez91",
-   database: "u936632816_Pruebas",
-   waitForConnections: true,
-   connectionLimit: 10,
-   queueLimit: 0,
+// Configuración de la conexión a la base de datos PG
+
+const pool = new Pool({
+   connectionString: process.env.DATABASE_URL,
+   ssl: {
+      rejectUnauthorized: false, // Esto es necesario si el servidor utiliza un certificado autofirmado
+   },
 });
 
 // LLamadas
@@ -30,7 +32,7 @@ app.post("/datos", async (req, res) => {
 
       // Insert data into the database
       const query =
-         "INSERT INTO `toma_datos`( `humedad_a`, `temperatura`, `humedad_s`, `intensidad`) VALUES ('?','?','?','?')";
+         "INSERT INTO toma_datos(humedad_a, temperatura, humedad_s, intensidad) VALUES ($1, $2, $3, $4)";
       const results = await pool.query(query, [
          humedad_a,
          temperatura,
@@ -45,10 +47,10 @@ app.post("/datos", async (req, res) => {
 app.get("/datos", async (req, res) => {
    try {
       // Retrieve data from the database
-      const query = "SELECT * FROM `toma_datos`";
-      const [results] = await pool.query(query);
+      const query = "SELECT * FROM toma_datos";
+      const { rows } = await pool.query(query);
 
-      res.status(200).send(results);
+      res.status(200).send(rows);
    } catch (error) {
       res.status(500).send({ message: "Error al obtener datos", error });
    }
