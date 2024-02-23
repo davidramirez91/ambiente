@@ -26,8 +26,9 @@
          }
          th,
          td {
-            padding: 10px;
+            padding: 8px;
             text-align: left;
+            font-size: 14px; /* Se reduce el tamaño de la fuente para dispositivos móviles */
          }
          .grafica-container {
             width: 700px;
@@ -42,10 +43,28 @@
             width: 60%; /* Hace que la tabla use todo el ancho disponible */
             margin-top: 20px; /* Espacio arriba de la tabla */
          }
+
+         /* Estilos responsivos para pantallas más pequeñas */
+         @media (max-width: 768px) {
+            th,
+            td {
+               font-size: 12px; /* Tamaño de fuente aún más pequeño para pantallas estrechas */
+               padding: 5px; /* Menos espacio entre celdas */
+            }
+            .grafica-container {
+               width: 100%; /* Ajusta el contenedor de la gráfica al ancho de la pantalla */
+               height: auto; /* Altura automática para mantener la proporción */
+            }
+         }
       </style>
    </head>
    <body>
       <h1>Análisis de Datos Ambientales</h1>
+
+      <!-- Imagen centrada -->
+      <div style="text-align: center">
+         <img src="/img/arbol.gif" alt="Árbol" style="margin-bottom: 20px" />
+      </div>
 
       <canvas id="myChart" class="grafica-container"></canvas>
 
@@ -75,7 +94,7 @@
                const myChart = new Chart(ctx, {
                   type: "line",
                   data: {
-                     labels: datos.map((dato) => dato.id * 5),
+                     labels: datos.map((dato) => dato.id * 10),
                      datasets: [
                         {
                            label: "Humedad Ambiente",

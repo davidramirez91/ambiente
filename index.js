@@ -13,6 +13,7 @@ app.use(cors()); // oring cabecera
 app.use(json()); // req.body
 app.set("view engine", "ejs"); // Configura Express para usar EJS
 app.use(express.static("views"));
+app.use(express.static("statics")); // Esto permite acceder a los archivos en 'statics'
 app.disable("x-powered-by");
 
 // Configuración de la conexión a la base de datos PG
