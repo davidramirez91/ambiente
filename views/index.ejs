@@ -83,7 +83,7 @@
             .then((datos) => {
                // Construir tabla
                let html =
-                  "<tr><th>ID</th><th>Humedad A</th><th>Temperatura</th><th>Humedad S</th><th>Intensidad</th></tr>";
+                  "<tr><th>ID</th><th>H. Ambiente [%]</th><th>Temperatura [ºC]</th><th>H. Suelo [%]</th><th>UV [nW/cm2]</th></tr>";
                datos.forEach((dato) => {
                   html += `<tr style="color: #000; background-color: #fff;"><td>${dato.id}</td><td>${dato.humedad_a}</td><td>${dato.temperatura}</td><td>${dato.humedad_s}</td><td>${dato.intensidad}</td></tr>`;
                });
