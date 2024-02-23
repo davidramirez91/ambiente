@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+   <head>
+      <meta charset="UTF-8" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>DATOS</title>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <style>
+         body {
+            background-color: #333; /* Fondo oscuro */
+            color: #fff; /* Texto claro */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centra los elementos horizontalmente */
+            justify-content: center; /* Centra los elementos verticalmente (opcional) */
+            min-height: 100vh; /* Altura mínima del viewport */
+            margin: 0; /* Elimina los márgenes predeterminados */
+            padding: 20px;
+         }
+         table,
+         th,
+         td {
+            border: 1px solid #888; /* Borde más claro para contraste */
+            border-collapse: collapse;
+         }
+         th,
+         td {
+            padding: 10px;
+            text-align: left;
+         }
+         .grafica-container {
+            width: 700px;
+            height: 700px;
+            margin: 20px auto; /* Centrado y con algo de margen */
+         }
+         .contenido_tabla {
+            width: 80%; /* Ajusta según necesidad */
+            overflow-x: auto; /* Permite desplazamiento horizontal si es necesario */
+         }
+         table {
+            width: 60%; /* Hace que la tabla use todo el ancho disponible */
+            margin-top: 20px; /* Espacio arriba de la tabla */
+         }
+      </style>
+   </head>
+   <body>
+      <h1>Análisis de Datos Ambientales</h1>
+
+      <canvas id="myChart" class="grafica-container"></canvas>
+
+      <div class="contenido_tabla">
+         <table class="tabla">
+            <!-- ingreso de datos desde fetch -->
+         </table>
+      </div>
+
+      <script type="module">
+         const tabla = document.querySelector(".tabla");
+         const grafica = document.getElementById("myChart");
+
+         fetch("/datos")
+            .then((res) => res.json())
+            .then((datos) => {
+               // Construir tabla
+               let html =
+                  "<tr><th>ID</th><th>Humedad A</th><th>Temperatura</th><th>Humedad S</th><th>Intensidad</th></tr>";
+               datos.forEach((dato) => {
+                  html += `<tr style="color: #000; background-color: #fff;"><td>${dato.id}</td><td>${dato.humedad_a}</td><td>${dato.temperatura}</td><td>${dato.humedad_s}</td><td>${dato.intensidad}</td></tr>`;
+               });
+               tabla.innerHTML = html;
+
+               // Construir gráfica
+               const ctx = grafica.getContext("2d");
+               const myChart = new Chart(ctx, {
+                  type: "line",
+                  data: {
+                     labels: datos.map((dato) => dato.id * 5),
+                     datasets: [
+                        {
+                           label: "Humedad Ambiente",
+                           data: datos.map((dato) => dato.humedad_a),
+                           backgroundColor: "rgba(255, 99, 132, 0.2)",
+                           borderColor: "rgba(255, 99, 132, 1)",
+                           borderWidth: 1,
+                           fill: false, // No rellenar debajo de la línea
+                        },
+                        {
+                           label: "Temperatura Ambiente",
+                           data: datos.map((dato) => dato.temperatura),
+                           borderColor: "rgba(54, 162, 235, 1)",
+                           borderWidth: 1,
+                           fill: false,
+                        },
+                        {
+                           label: "Humedad Suelo",
+                           data: datos.map((dato) => dato.humedad_s),
+                           borderColor: "rgba(255, 206, 86, 1)",
+                           borderWidth: 1,
+                           fill: false,
+                        },
+                        {
+                           label: "Intensidad Uv",
+                           data: datos.map((dato) => dato.intensidad),
+                           borderColor: "rgba(75, 192, 192, 1)",
+                           borderWidth: 1,
+                           fill: false,
+                        },
+                     ],
+                  },
+                  options: {
+                     responsive: true,
+                     plugins: {
+                        legend: {
+                           labels: {
+                              color: "white", // Color del texto de la leyenda
+                           },
+                        },
+                        title: {
+                           display: true,
+                           text: "Análisis de Datos Ambientales", // Título de la gráfica
+                           color: "white", // Color del título
+                        },
+                     },
+                     scales: {
+                        y: {
+                           beginAtZero: true,
+                           title: {
+                              display: true,
+                              text: "datos",
+                              color: "white",
+                           },
+                           ticks: {
+                              color: "white", // Color de los ticks en eje Y
+                           },
+                        },
+                        x: {
+                           title: {
+                              display: true,
+                              text: "tiempo [s]",
+                              color: "white",
+                           },
+                           ticks: {
+                              color: "white", // Color de los ticks en eje X
+                           },
+                        },
+                     },
+                  },
+               });
+            });
+      </script>
+   </body>
+</html>
